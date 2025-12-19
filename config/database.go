@@ -1,0 +1,27 @@
+package config
+
+import (
+	"fmt"
+	"log"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+func ConnectDB() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		GetEnv("DB_USER"),
+		GetEnv("DB_PASS"),
+		GetEnv("DB_HOST"),
+		GetEnv("DB_NAME"),
+	)
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("DB connection failed:", err)
+	}
+
+	DB = db
+}
