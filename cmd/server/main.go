@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"mikrotik-api/config"
 	"mikrotik-api/routes"
 
@@ -8,6 +10,7 @@ import (
 	"mikrotik-api/modules/mikrotik"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -23,9 +26,18 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	// 🔥 CORS CONFIG (THIS FIXES YOUR ISSUE)
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	routes.RegisterRoutes(r)
 
-	println("🚀 MikroTik API running on port " + config.GetEnv("APP_PORT"))
 	r.Run(":" + config.GetEnv("APP_PORT"))
 }
-

@@ -8,4 +8,5 @@ type User struct {
 	Email    string `json:"email" gorm:"type:varchar(255);uniqueIndex"`
 	Password string `json:"-"`
 	Role     string `json:"role" gorm:"type:varchar(50)"`
+	Active   bool   `json:"active" gorm:"default:true"`
 }

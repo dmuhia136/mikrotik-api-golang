@@ -34,4 +34,9 @@ func RegisterRoutes(r *gin.Engine) {
 	admin.GET("/dashboard", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "Admin access granted"})
 	})
+
+	admin.POST("/users", auth.AdminCreateUser)
+	admin.GET("/users", auth.AdminListUsers)
+	admin.PUT("/users/:id/role", auth.AdminUpdateUserRole)
+	admin.PUT("/users/:id/status", auth.AdminSetUserStatus)
 }

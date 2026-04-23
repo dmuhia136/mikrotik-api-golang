@@ -47,14 +47,43 @@ func Login(c *gin.Context) {
 
 	user, err := LoginUser(body.Email, body.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
-	token, _ := utils.GenerateToken(user.ID, user.Role)
+	token, err := utils.GenerateToken(user.ID, user.Role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "token generation failed"})
+		return
+	}
+
+	// 🔥 SET HTTPONLY COOKIE
+	c.SetCookie(
+		"token",
+		token,
+		3600*24, // 1 day
+		"/",
+		"",
+		false, // set true in production with HTTPS
+		true,  // httpOnly
+	)
 
 	c.JSON(http.StatusOK, gin.H{
-		"user":  user,
-		"token": token,
+		"user": user,
+		"token":token,
 	})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie(
+		"token",
+		"",
+		-1,
+		"/",
+		"",
+		false,
+		true,
+	)
+
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }
